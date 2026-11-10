@@ -1,411 +1,345 @@
-==========
-Quickstart
-==========
-
-.. note::
-
-  Before proceeding, install Manim and make sure it is running properly by
-  following the steps in :doc:`../installation`. For
-  information on using Manim with Jupyterlab or Jupyter notebook, go to the
-  documentation for the
-  :meth:`IPython magic command <manim.utils.ipython_magic.ManimMagic.manim>`,
-  ``%%manim``.
-
-
-.. important::
-
-  If you installed Manim in the recommended way, using the
-  Python management tool ``uv``, then you either need to make sure the corresponding
-  virtual environment is activated (follow the instructions printed on running ``uv venv``),
-  or you need to remember to prefix the ``manim`` command in the console with ``uv run``;
-  that is, ``uv run manim ...``.
-
-Overview
-********
-
-This quickstart guide will lead you through creating a sample project using Manim: an animation
-engine for precise programmatic animations.
-
-First, you will use a command line
-interface to create a ``Scene``, the class through which Manim generates videos.
-In the ``Scene`` you will animate a circle. Then you will add another ``Scene`` showing
-a square transforming into a circle. This will be your introduction to Manim's animation ability.
-Afterwards, you will position multiple mathematical objects (``Mobject``\s). Finally, you
-will learn the ``.animate`` syntax, a powerful feature that animates the methods you
-use to modify ``Mobject``\s.
-
-
-Starting a new project
-**********************
-
-Start by creating a new folder::
-
-   manim init project my-project --default
-
-The ``my-project`` folder is the root folder for your project. It contains all the files that Manim needs to function,
-as well as any output that your project produces.
-
-
-Animating a circle
-******************
-
-1. Open a text editor, such as Notepad. Open the file ``main.py`` in the ``my-project`` folder.
-   It should look something like this:
-
-   .. code-block:: python
-
-     from manim import *
-
-
-     class CreateCircle(Scene):
-         def construct(self):
-             circle = Circle()  # create a circle
-             circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-             self.play(Create(circle))  # show the circle on screen
-
-
-2. Open the command line, navigate to your project folder, and execute
-   the following command:
-
-   .. code-block:: bash
-
-     manim -pql main.py CreateCircle
-
-Manim will output rendering information, then create an MP4 file.
-Your default movie player will play the MP4 file, displaying the following animation.
-
-.. manim:: CreateCircle
-   :hide_source:
-
-   class CreateCircle(Scene):
-       def construct(self):
-           circle = Circle()                   # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-           self.play(Create(circle))     # show the circle on screen
-
-If you see an animation of a pink circle being drawn, congratulations!
-You just wrote your first Manim scene from scratch.
-
-If you get an error
-message instead, you do not see a video, or if the video output does not
-look like the preceding animation, it is likely that Manim has not been
-installed correctly. Please refer to our :doc:`FAQ section </faq/index>`
-for help with the most common issues.
-
-
-***********
-Explanation
-***********
-
-Let's go over the script you just executed line by line to see how Manim was
-able to draw the circle.
-
-The first line imports all of the contents of the library:
-
-.. code-block:: python
-
-   from manim import *
-
-This is the recommended way of using Manim, as a single script often uses
-multiple names from the Manim namespace. In your script, you imported and used
-``Scene``, ``Circle``, ``PINK`` and ``Create``.
-
-Now let's look at the next two lines:
-
-.. code-block:: python
-
-   class CreateCircle(Scene):
-       def construct(self):
-           [...]
-
-Most of the time, the code for scripting an animation is entirely contained within
-the :meth:`~.Scene.construct` method of a :class:`.Scene` class.
-Inside :meth:`~.Scene.construct`, you can create objects, display them on screen, and animate them.
-
-The next two lines create a circle and set its color and opacity:
-
-.. code-block:: python
-
-           circle = Circle()  # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-
-Finally, the last line uses the animation :class:`.Create` to display the
-circle on your screen:
-
-.. code-block:: python
-
-           self.play(Create(circle))  # show the circle on screen
-
-.. tip:: All animations must reside within the :meth:`~.Scene.construct` method of a
-         class derived from :class:`.Scene`.  Other code, such as auxiliary
-         or mathematical functions, may reside outside the class.
-
-
-Transforming a square into a circle
-***********************************
-
-With our circle animation complete, let's move on to something a little more complicated.
-
-1. Open ``scene.py``, and add the following code snippet below the ``CreateCircle`` class:
-
-.. code-block:: python
-
-   class SquareToCircle(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set color and transparency
-
-           square = Square()  # create a square
-           square.rotate(PI / 4)  # rotate a certain amount
-
-           self.play(Create(square))  # animate the creation of the square
-           self.play(Transform(square, circle))  # interpolate the square into the circle
-           self.play(FadeOut(square))  # fade out animation
-
-2. Render ``SquareToCircle`` by running the following command in the command line:
-
-.. code-block:: bash
-
-   manim -pql scene.py SquareToCircle
-
-The following animation will render:
-
-.. manim:: SquareToCircle2
-   :hide_source:
-
-   class SquareToCircle2(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set color and transparency
-
-           square = Square()  # create a square
-           square.rotate(PI / 4)  # rotate a certain amount
-
-           self.play(Create(square))  # animate the creation of the square
-           self.play(Transform(square, circle))  # interpolate the square into the circle
-           self.play(FadeOut(square))  # fade out animation
-
-This example shows one of the primary features of Manim: the ability to
-implement complicated and mathematically intensive animations (such as cleanly
-interpolating between two geometric shapes) with just a few lines of code.
-
-
-Positioning ``Mobject``\s
-*************************
-
-Next, let's go over some basic techniques for positioning ``Mobject``\s.
-
-1. Open ``scene.py``, and add the following code snippet below the ``SquareToCircle`` class:
-
-.. code-block:: python
-
-   class SquareAndCircle(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-
-           square = Square()  # create a square
-           square.set_fill(BLUE, opacity=0.5)  # set the color and transparency
-
-           square.next_to(circle, RIGHT, buff=0.5)  # set the position
-           self.play(Create(circle), Create(square))  # show the shapes on screen
-
-2. Render ``SquareAndCircle`` by running the following command in the command line:
-
-.. code-block:: bash
-
-   manim -pql scene.py SquareAndCircle
-
-The following animation will render:
-
-.. manim:: SquareAndCircle2
-   :hide_source:
-
-   class SquareAndCircle2(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-
-           square = Square() # create a square
-           square.set_fill(BLUE, opacity=0.5) # set the color and transparency
-
-           square.next_to(circle, RIGHT, buff=0.5) # set the position
-           self.play(Create(circle), Create(square))  # show the shapes on screen
-
-``next_to`` is a ``Mobject`` method for positioning ``Mobject``\s.
-
-We first specified
-the pink circle as the square's reference point by passing ``circle`` as the method's first argument.
-The second argument is used to specify the direction the ``Mobject`` is placed relative to the reference point.
-In this case, we set the direction to ``RIGHT``, telling Manim to position the square to the right of the circle.
-Finally, ``buff=0.5`` applied a small distance buffer between the two objects.
-
-Try changing ``RIGHT`` to ``LEFT``, ``UP``, or ``DOWN`` instead, and see how that changes the position of the square.
-
-Using positioning methods, you can render a scene with multiple ``Mobject``\s,
-setting their locations in the scene using coordinates or positioning them
-relative to each other.
-
-For more information on ``next_to`` and other positioning methods, check out the
-list of :class:`.Mobject` methods in our reference manual.
-
-
-Using ``.animate`` syntax to animate methods
-********************************************
-
-The final lesson in this tutorial is using ``.animate``, a ``Mobject`` method which
-animates changes you make to a ``Mobject``. When you prepend ``.animate`` to any
-method call that modifies a ``Mobject``, the method becomes an animation which
-can be played using ``self.play``. Let's return to ``SquareToCircle`` to see the
-differences between using methods when creating a ``Mobject``,
-and animating those method calls with ``.animate``.
-
-1. Open ``scene.py``, and add the following code snippet below the ``SquareAndCircle`` class:
-
-.. code-block:: python
-
-   class AnimatedSquareToCircle(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           square = Square()  # create a square
-
-           self.play(Create(square))  # show the square on screen
-           self.play(square.animate.rotate(PI / 4))  # rotate the square
-           self.play(Transform(square, circle))  # transform the square into a circle
-           self.play(
-               square.animate.set_fill(PINK, opacity=0.5)
-           )  # color the circle on screen
-
-2. Render ``AnimatedSquareToCircle`` by running the following command in the command line:
-
-.. code-block:: bash
-
-   manim -pql scene.py AnimatedSquareToCircle
-
-The following animation will render:
-
-.. manim:: AnimatedSquareToCircle2
-   :hide_source:
-
-   class AnimatedSquareToCircle2(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           square = Square()  # create a square
-
-           self.play(Create(square))  # show the square on screen
-           self.play(square.animate.rotate(PI / 4))  # rotate the square
-           self.play(Transform(square, circle))  # transform the square into a circle
-           self.play(square.animate.set_fill(PINK, opacity=0.5))  # color the circle on screen
-
-The first ``self.play`` creates the square. The second animates rotating it 45 degrees.
-The third transforms the square into a circle, and the last colors the circle pink.
-Although the end result is the same as that of ``SquareToCircle``, ``.animate`` shows
-``rotate`` and ``set_fill`` being applied to the ``Mobject`` dynamically, instead of creating them
-with the changes already applied.
-
-Try other methods, like ``flip`` or ``shift``, and see what happens.
-
-3. Open ``scene.py``, and add the following code snippet below the ``AnimatedSquareToCircle`` class:
-
-.. code-block:: python
-
-   class DifferentRotations(Scene):
-       def construct(self):
-           left_square = Square(color=BLUE, fill_opacity=0.7).shift(2 * LEFT)
-           right_square = Square(color=GREEN, fill_opacity=0.7).shift(2 * RIGHT)
-           self.play(
-               left_square.animate.rotate(PI), Rotate(right_square, angle=PI), run_time=2
-           )
-           self.wait()
-
-4. Render ``DifferentRotations`` by running the following command in the command line:
-
-.. code-block:: bash
-
-   manim -pql scene.py DifferentRotations
-
-The following animation will render:
-
-.. manim:: DifferentRotations2
-   :hide_source:
-
-   class DifferentRotations2(Scene):
-       def construct(self):
-           left_square = Square(color=BLUE, fill_opacity=0.7).shift(2*LEFT)
-           right_square = Square(color=GREEN, fill_opacity=0.7).shift(2*RIGHT)
-           self.play(left_square.animate.rotate(PI), Rotate(right_square, angle=PI), run_time=2)
-           self.wait()
-
-This ``Scene`` illustrates the quirks of ``.animate``. When using ``.animate``, Manim
-actually takes a ``Mobject``'s starting state and its ending state and interpolates the two.
-In the ``AnimatedSquareToCircle`` class, you can observe this when the square rotates:
-the corners of the square appear to contract slightly as they move into the positions required
-for the first square to transform into the second one.
-
-In ``DifferentRotations``, the difference between ``.animate``'s interpretation of rotation and the
-``Rotate`` method is far more apparent. The starting and ending states of a ``Mobject`` rotated 180 degrees
-are the same, so ``.animate`` tries to interpolate two identical objects and the result is the left square.
-If you find that your own usage of ``.animate`` is causing similar unwanted behavior, consider
-using conventional animation methods like the right square, which uses ``Rotate``.
-
-
-``Transform`` vs ``ReplacementTransform``
-*****************************************
-The difference between ``Transform`` and ``ReplacementTransform`` is that ``Transform(mob1, mob2)`` transforms the points
-(as well as other attributes like color) of ``mob1`` into the points/attributes of ``mob2``.
-
-``ReplacementTransform(mob1, mob2)`` on the other hand literally replaces ``mob1`` on the scene with ``mob2``.
-
-The use of ``ReplacementTransform`` or ``Transform`` is mostly up to personal preference. They can be used to accomplish the same effect, as shown below.
-
-.. code-block:: python
-
-    class TwoTransforms(Scene):
-        def transform(self):
-            a = Circle()
-            b = Square()
-            c = Triangle()
-            self.play(Transform(a, b))
-            self.play(Transform(a, c))
-            self.play(FadeOut(a))
-
-        def replacement_transform(self):
-            a = Circle()
-            b = Square()
-            c = Triangle()
-            self.play(ReplacementTransform(a, b))
-            self.play(ReplacementTransform(b, c))
-            self.play(FadeOut(c))
-
-        def construct(self):
-            self.transform()
-            self.wait(0.5)  # wait for 0.5 seconds
-            self.replacement_transform()
-
-
-However, in some cases it is more beneficial to use ``Transform``, like when you are transforming several mobjects one after the other.
-The code below avoids having to keep a reference to the last mobject that was transformed.
-
-.. manim:: TransformCycle
-
-    class TransformCycle(Scene):
-        def construct(self):
-            a = Circle()
-            t1 = Square()
-            t2 = Triangle()
-            self.add(a)
-            self.wait()
-            for t in [t1,t2]:
-                self.play(Transform(a,t))
-
-************
-You're done!
-************
-
-With a working installation of Manim and this sample project under your belt,
-you're ready to start creating animations of your own.  To learn
-more about what Manim is doing under the hood, move on to the next tutorial:
-:doc:`output_and_config`.  For an overview of
-Manim's features, as well as its configuration and other settings, check out the
-other :doc:`Tutorials <../tutorials/index>`.  For a list of all available features, refer to the
-:doc:`../reference` page.
+from manim import *
+import numpy as np
+
+
+# ============================================================
+#   GATINHO PRETO (desenhado com formas geométricas)
+# ============================================================
+class GatinhoPreto(VGroup):
+    def __init__(self, scale_factor=1.0, **kwargs):
+        super().__init__(**kwargs)
+
+        PRETO = BLACK
+        BRANCO = WHITE
+
+        # Corpo
+        corpo = Ellipse(width=1.6, height=1.2, color=PRETO, fill_opacity=1)
+        corpo.move_to(DOWN * 0.6)
+
+        # Cabeça
+        cabeca = Circle(radius=0.55, color=PRETO, fill_opacity=1)
+        cabeca.move_to(UP * 0.6)
+
+        # Orelhas (triângulos)
+        orelha_esq = Triangle(color=PRETO, fill_opacity=1).scale(0.28)
+        orelha_esq.move_to(UP * 1.15 + LEFT * 0.35)
+        orelha_esq.rotate(-0.2)
+
+        orelha_dir = Triangle(color=PRETO, fill_opacity=1).scale(0.28)
+        orelha_dir.move_to(UP * 1.15 + RIGHT * 0.35)
+        orelha_dir.rotate(0.2)
+
+        # Olhos (grandes e expressivos)
+        olho_esq = Circle(radius=0.13, color=BRANCO, fill_opacity=1)
+        olho_esq.move_to(UP * 0.7 + LEFT * 0.2)
+
+        olho_dir = Circle(radius=0.13, color=BRANCO, fill_opacity=1)
+        olho_dir.move_to(UP * 0.7 + RIGHT * 0.2)
+
+        pupila_esq = Dot(point=olho_esq.get_center(), radius=0.06, color=PRETO)
+        pupila_dir = Dot(point=olho_dir.get_center(), radius=0.06, color=PRETO)
+
+        # Nariz
+        nariz = Triangle(color=PINK, fill_opacity=1).scale(0.06)
+        nariz.move_to(UP * 0.5)
+        nariz.rotate(PI)
+
+        # Bigodes
+        bigode_esq1 = Line(LEFT * 0.6 + UP * 0.52, LEFT * 0.25 + UP * 0.5, color=WHITE, stroke_width=2)
+        bigode_esq2 = Line(LEFT * 0.6 + UP * 0.45, LEFT * 0.25 + UP * 0.47, color=WHITE, stroke_width=2)
+        bigode_dir1 = Line(RIGHT * 0.6 + UP * 0.52, RIGHT * 0.25 + UP * 0.5, color=WHITE, stroke_width=2)
+        bigode_dir2 = Line(RIGHT * 0.6 + UP * 0.45, RIGHT * 0.25 + UP * 0.47, color=WHITE, stroke_width=2)
+
+        # Cauda
+        cauda = Arc(radius=0.5, start_angle=-PI/2, angle=PI, color=PRETO, stroke_width=14)
+        cauda.move_to(DOWN * 1.0 + RIGHT * 0.9)
+
+        self.add(corpo, cauda, cabeca, orelha_esq, orelha_dir,
+                 olho_esq, olho_dir, pupila_esq, pupila_dir,
+                 nariz, bigode_esq1, bigode_esq2, bigode_dir1, bigode_dir2)
+
+        # Referências para piscar
+        self.olho_esq = olho_esq
+        self.olho_dir = olho_dir
+        self.pupila_esq = pupila_esq
+        self.pupila_dir = pupila_dir
+
+        self.scale(scale_factor)
+
+    def piscar(self):
+        """Animação de piscar os olhos."""
+        return AnimationGroup(
+            self.olho_esq.animate.stretch(0.1, 1),
+            self.olho_dir.animate.stretch(0.1, 1),
+            self.pupila_esq.animate.set_opacity(0),
+            self.pupila_dir.animate.set_opacity(0),
+            lag_ratio=0,
+        )
+
+    def abrir_olhos(self):
+        return AnimationGroup(
+            self.olho_esq.animate.stretch(10, 1),
+            self.olho_dir.animate.stretch(10, 1),
+            self.pupila_esq.animate.set_opacity(1),
+            self.pupila_dir.animate.set_opacity(1),
+            lag_ratio=0,
+        )
+
+
+# ============================================================
+#   CENA PRINCIPAL
+# ============================================================
+class GatinhoExplicaMecanica(Scene):
+    def construct(self):
+        self.camera.background_color = "#1a1a2e"
+
+        # ---------- TELA INICIAL ----------
+        titulo = Text(
+            "Gatinho Preto Explica Mecânica",
+            font_size=44,
+            color=YELLOW,
+            weight=BOLD,
+        ).to_edge(UP, buff=0.6)
+
+        gatinho = GatinhoPreto(scale_factor=1.4)
+        gatinho.move_to(DOWN * 0.8)
+
+        legenda = Text(
+            "Miau! Vamos aprender Física?",
+            font_size=32,
+            color=WHITE,
+        ).next_to(gatinho, UP, buff=0.5)
+
+        self.play(Write(titulo), run_time=1.5)
+        self.play(FadeIn(gatinho, shift=UP * 0.5), Write(legenda), run_time=1.5)
+        self.play(gatinho.piscar(), run_time=0.15)
+        self.play(gatinho.abrir_olhos(), run_time=0.15)
+        self.wait(1.5)
+
+        # ---------- MENU ----------
+        self.play(FadeOut(legenda))
+        menu = self.criar_menu()
+        self.play(Write(menu))
+        self.wait(1.5)
+        self.play(FadeOut(menu), gatinho.animate.scale(0.7).to_corner(DL, buff=0.4))
+
+        # ---------- SEÇÃO 1: CINEMÁTICA ----------
+        self.secao_cinematica(gatinho)
+
+        # ---------- SEÇÃO 2: DINÂMICA ----------
+        self.secao_dinamica(gatinho)
+
+        # ---------- SEÇÃO 3: LEIS DE NEWTON ----------
+        self.secao_leis_newton(gatinho)
+
+        # ---------- ENCERRAMENTO ----------
+        self.encerramento(gatinho, titulo)
+
+    # --------------------------------------------------------
+    def criar_menu(self):
+        itens = VGroup(
+            self.botao("1. Cinemática", BLUE),
+            self.botao("2. Dinâmica", GREEN),
+            self.botao("3. Leis de Newton", ORANGE),
+        ).arrange(DOWN, buff=0.4).move_to(RIGHT * 3 + DOWN * 0.5)
+        return itens
+
+    def botao(self, texto, cor):
+        rect = RoundedRectangle(
+            corner_radius=0.15, width=4.5, height=0.9,
+            color=cor, stroke_width=3, fill_opacity=0.15,
+        )
+        label = Text(texto, font_size=28, color=cor).move_to(rect)
+        return VGroup(rect, label)
+
+    # --------------------------------------------------------
+    def secao_cinematica(self, gatinho):
+        titulo = self.titulo_secao("Cinemática", BLUE)
+
+        definicao = Text(
+            "Estuda o movimento dos corpos\nsem se preocupar com as causas.",
+            font_size=26, color=WHITE, line_spacing=1.2,
+        ).next_to(titulo, DOWN, buff=0.6)
+
+        # Fórmula principal
+        formula = MathTex(
+            r"v = \frac{\Delta s}{\Delta t}", color=YELLOW, font_size=60
+        ).next_to(definicao, DOWN, buff=0.6)
+
+        # Simulação de um carrinho em MRU
+        eixo = NumberLine(
+            x_range=[0, 10, 1], length=8,
+            include_numbers=False, color=GREY,
+        ).to_edge(DOWN, buff=1.5)
+
+        carrinho = self.carrinho().move_to(eixo.n2p(0) + UP * 0.5)
+        pos_label = always_redraw(
+            lambda: DecimalNumber(0, num_decimal_places=1, color=YELLOW)
+            .next_to(carrinho, UP, buff=0.2)
+        )
+
+        self.play(Write(titulo))
+        self.play(FadeIn(definicao, shift=UP * 0.3))
+        self.play(Write(formula))
+        self.play(gatinho.piscar(), run_time=0.15)
+        self.play(gatinho.abrir_olhos(), run_time=0.15)
+        self.play(Create(eixo), FadeIn(carrinho))
+        self.play(
+            carrinho.animate.move_to(eixo.n2p(10) + UP * 0.5),
+            run_time=3, rate_func=linear,
+        )
+
+        texto_final = Text(
+            "Movimento Retilíneo Uniforme (MRU)",
+            font_size=24, color=BLUE_B,
+        ).next_to(eixo, UP, buff=1.2)
+        self.play(FadeIn(texto_final))
+
+        # Salva o valor final
+        self.play(FadeIn(pos_label))
+        self.wait(1.5)
+
+        self.play(
+            FadeOut(titulo), FadeOut(definicao), FadeOut(formula),
+            FadeOut(eixo), FadeOut(carrinho), FadeOut(texto_final),
+            FadeOut(pos_label),
+        )
+
+    # --------------------------------------------------------
+    def secao_dinamica(self, gatinho):
+        titulo = self.titulo_secao("Dinâmica", GREEN)
+
+        definicao = Text(
+            "Estuda as causas do movimento:\nforças e suas consequências.",
+            font_size=26, color=WHITE, line_spacing=1.2,
+        ).next_to(titulo, DOWN, buff=0.6)
+
+        formula = MathTex(
+            r"F_{r} = m \cdot a", color=YELLOW, font_size=60
+        ).next_to(definicao, DOWN, buff=0.5)
+
+        # Bloco com força aplicada
+        bloco = Square(side_length=1.2, color=GREEN, fill_opacity=0.6)
+        bloco.move_to(LEFT * 2 + DOWN * 1.8)
+
+        seta_forca = Arrow(
+            bloco.get_right(), bloco.get_right() + RIGHT * 2.2,
+            buff=0, color=RED, stroke_width=8,
+        )
+        label_f = MathTex("F", color=RED, font_size=40).next_to(seta_forca, UP, buff=0.15)
+
+        massa_label = MathTex("m", color=GREEN, font_size=36).move_to(bloco)
+
+        self.play(Write(titulo))
+        self.play(FadeIn(definicao, shift=UP * 0.3))
+        self.play(Write(formula))
+        self.play(gatinho.piscar(), run_time=0.15)
+        self.play(gatinho.abrir_olhos(), run_time=0.15)
+
+        self.play(Create(bloco), Write(massa_label))
+        self.play(GrowArrow(seta_forca), Write(label_f))
+        self.wait(0.5)
+
+        # Aceleração do bloco
+        self.play(
+            bloco.animate.shift(RIGHT * 3),
+            seta_forca.animate.shift(RIGHT * 3),
+            label_f.animate.shift(RIGHT * 3),
+            massa_label.animate.shift(RIGHT * 3),
+            run_time=1.5, rate_func=rush_into,
+        )
+
+        texto_final = Text(
+            "Força resultante → aceleração",
+            font_size=24, color=GREEN_B,
+        ).to_edge(DOWN, buff=1.0)
+        self.play(FadeIn(texto_final))
+        self.wait(1.5)
+
+        self.play(
+            FadeOut(titulo), FadeOut(definicao), FadeOut(formula),
+            FadeOut(bloco), FadeOut(seta_forca), FadeOut(label_f),
+            FadeOut(massa_label), FadeOut(texto_final),
+        )
+
+    # --------------------------------------------------------
+    def secao_leis_newton(self, gatinho):
+        titulo = self.titulo_secao("Leis de Newton", ORANGE)
+
+        self.play(Write(titulo))
+        self.play(gatinho.piscar(), run_time=0.15)
+        self.play(gatinho.abrir_olhos(), run_time=0.15)
+
+        leis = [
+            (
+                "1ª Lei — Inércia",
+                "Um corpo tende a permanecer em\nrepouso ou em movimento uniforme.",
+                YELLOW,
+            ),
+            (
+                "2ª Lei — F = m·a",
+                "A força resultante é igual à massa\nvezes a aceleração.",
+                RED,
+            ),
+            (
+                "3ª Lei — Ação e Reação",
+                "Toda ação gera uma reação de igual\nintensidade e sentido oposto.",
+                CYAN,
+            ),
+        ]
+
+        for cab, corpo, cor in leis:
+            header = Text(cab, font_size=32, color=cor, weight=BOLD)
+            body = Text(corpo, font_size=24, color=WHITE, line_spacing=1.2)
+            grupo = VGroup(header, body).arrange(DOWN, buff=0.35)
+            grupo.next_to(titulo, DOWN, buff=0.8)
+
+            self.play(Write(header), run_time=0.7)
+            self.play(FadeIn(body, shift=UP * 0.2), run_time=0.6)
+            self.wait(1.2)
+            self.play(FadeOut(header), FadeOut(body), run_time=0.5)
+
+        self.play(FadeOut(titulo))
+
+    # --------------------------------------------------------
+    def encerramento(self, gatinho, titulo):
+        gatinho2 = GatinhoPreto(scale_factor=1.6).center().shift(DOWN * 0.5)
+
+        texto = Text(
+            "Miau! Agora você sabe Mecânica!",
+            font_size=36, color=YELLOW, weight=BOLD,
+        ).next_to(gatinho2, UP, buff=0.7)
+
+        self.play(FadeIn(gatinho2, shift=UP * 0.4))
+        self.play(Write(texto))
+        self.play(gatinho2.piscar(), run_time=0.15)
+        self.play(gatinho2.abrir_olhos(), run_time=0.15)
+        self.wait(2)
+
+        self.play(
+            FadeOut(gatinho2), FadeOut(texto), FadeOut(titulo),
+            run_time=1.5,
+        )
+
+    # --------------------------------------------------------
+    def titulo_secao(self, texto, cor):
+        return Text(texto, font_size=42, color=cor, weight=BOLD).to_edge(UP, buff=0.6)
+
+    def carrinho(self):
+        corpo = RoundedRectangle(
+            corner_radius=0.1, width=1.2, height=0.6,
+            color=BLUE, fill_opacity=0.8,
+        )
+        roda1 = Circle(radius=0.15, color=WHITE, fill_opacity=1).next_to(
+            corpo.get_corner(DL), DOWN, buff=0.02
+        )
+        roda2 = Circle(radius=0.15, color=WHITE, fill_opacity=1).next_to(
+            corpo.get_corner(DR), DOWN, buff=0.02
+        )
+        return VGroup(corpo, roda1, roda2)
+
+
+# ============================================================
+#   EXECUÇÃO
+#   manim -pqh gatinho_mecanica.py GatinhoExplicaMecanica
+# ============================================================
